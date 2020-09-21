@@ -13,31 +13,8 @@ import torch
 
 import bagnets.pytorchnet
 
-import tqdm
 import time
-
-# def validation(valid_loader, model, device, criterion):
-                
-#     model.eval()
-#     running_valid_loss, total_valid, correct_valid = 0, 0, 0
-    
-#     with torch.no_grad():
-#         for batch_X, batch_y in tqdm(valid_loader):
-            
-#             batch_X = batch_X.to(device)
-#             batch_y = batch_y.to(device)
-        
-#             outputs, out_logits = model(batch_X) 
-#             labels = batch_y.long().to(outputs.device)
-#             loss = criterion(out_logits, labels) 
-#             _, predictions = torch.max(outputs.detach(), 1)
-           
-#             running_valid_loss += loss.item() 
-#             total_valid += batch_y.shape[0]
-#             correct_valid += predictions.eq(labels).sum().item()  
-            
-#     return running_valid_loss/len(valid_loader), correct_valid/total_valid 
-
+import sys
 
 class AverageMeter(object):
     """Computes and stores the average and current value"""
@@ -168,13 +145,18 @@ models = [bagnets.pytorchnet.bagnet9,
           bagnets.pytorchnet.bagnet17, 
           bagnets.pytorchnet.bagnet33]
 
-criterion = torch.nn.CrossEntropyLoss()
+if len(sys.argv)>1: 
+    model = models[int(sys.argv[1])]
 
-for model in models:
-    print(model)
-    pytorch_model = model(pretrained=True) 
+print(model)
+pytorch_model = model(pretrained=True) 
 
-    test_loss, test_acc = validate(imagenet_data_loader, pytorch_model, device, criterion)
+# Parallelize if possible    
+if torch.cuda.device_count() > 1:
+    pytorch_model = torch.nn.DataParallel(pytorch_model)
         
-    print("Test loss", test_loss)
-    print("Test accuracy", test_acc)
+criterion = torch.nn.CrossEntropyLoss()
+test_loss, test_acc = validate(imagenet_data_loader, pytorch_model, device, criterion)
+    
+print("Test loss", test_loss)
+print("Test accuracy", test_acc)
