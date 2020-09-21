@@ -125,11 +125,10 @@ imagenet_val_dir = "/tudelft.net/staff-bulk/ewi/insy/CV-DataSets/imagenet/raw-da
 
 normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
-imagenet_data = torchvision.datasets.ImageFolder(
-        imagenet_val_dir,
-        transforms.Compose([
-            transforms.RandomResizedCrop(224),
-            transforms.RandomHorizontalFlip(),
+imagenet_data = torchvision.datasets.ImageFolder(imagenet_val_dir, 
+            transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
             transforms.ToTensor(),
             normalize,
         ]))
