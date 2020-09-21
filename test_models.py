@@ -38,7 +38,7 @@ def validation(valid_loader, model, device, criterion):
 
 
 device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
-imagenet_val_dir = "/;/tudelft.net/staff-bulk/ewi/insy/VisionLab/osk/imagenet_training/imagenet_500/val/"
+imagenet_val_dir = "/tudelft.net/staff-bulk/ewi/insy/CV-DataSets/imagenet/"
 imagenet_data = torchvision.datasets.ImageNet(imagenet_val_dir, split="val")
 imagenet_data_loader = torch.utils.data.DataLoader(imagenet_data,
                                           batch_size=1,
