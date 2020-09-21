@@ -7,6 +7,7 @@ Created on Mon Sep 21 15:28:21 2020
 """
 
 import torchvision
+import torchvision.transforms as transforms
 import torch 
 
 import bagnets.pytorchnet
@@ -38,8 +39,19 @@ def validation(valid_loader, model, device, criterion):
 
 
 device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
-imagenet_val_dir = "/;/tudelft.net/staff-bulk/ewi/insy/VisionLab/osk/imagenet_training/imagenet_500/val/"
-imagenet_data = torchvision.datasets.ImageNet(imagenet_val_dir, split="val")
+imagenet_val_dir = "/tudelft.net/staff-bulk/ewi/insy/CV-DataSets/imagenet/raw-data/val/"
+
+normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])
+imagenet_data = torchvision.datasets.ImageFolder(
+        imagenet_val_dir,
+        transforms.Compose([
+            transforms.RandomResizedCrop(224),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            normalize,
+        ]))
+
 imagenet_data_loader = torch.utils.data.DataLoader(imagenet_data,
                                           batch_size=1,
                                           shuffle=False)
