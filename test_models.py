@@ -67,7 +67,7 @@ criterion = torch.nn.CrossEntropyLoss()
 for model in models:
     print(model)
     pytorch_model = model(pretrained=True) 
-    test_loss, test_acc = validation(imagenet_data_loader, model, device, criterion)
+    test_loss, test_acc = validation(imagenet_data_loader, pytorch_model, device, criterion)
         
     print("Test loss", test_loss)
     print("Test accuracy", test_acc)
