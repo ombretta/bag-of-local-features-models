@@ -90,8 +90,8 @@ def validate(val_loader, model, device, criterion):
     with torch.no_grad():
         end = time.time()
         for i, (images, target) in enumerate(val_loader):
-            images.to(device)
-            target.to(device)
+            images = images.to(device)
+            target = target.to(device)
 
             # compute output
             output = model(images)
@@ -107,7 +107,7 @@ def validate(val_loader, model, device, criterion):
             batch_time.update(time.time() - end)
             end = time.time()
 
-            if i % 100 == 8:
+            if i % 8 == 0:
                 progress.display(i)
 
         # TODO: this should also be done with the ProgressMeter
@@ -124,11 +124,10 @@ imagenet_val_dir = "/tudelft.net/staff-bulk/ewi/insy/CV-DataSets/imagenet/raw-da
 
 normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
-imagenet_data = torchvision.datasets.ImageFolder(
-        imagenet_val_dir,
-        transforms.Compose([
-            transforms.RandomResizedCrop(224),
-            transforms.RandomHorizontalFlip(),
+imagenet_data = torchvision.datasets.ImageFolder(imagenet_val_dir, 
+            transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
             transforms.ToTensor(),
             normalize,
         ]))
@@ -154,6 +153,8 @@ pytorch_model = model(pretrained=True)
 # Parallelize if possible    
 if torch.cuda.device_count() > 1:
     pytorch_model = torch.nn.DataParallel(pytorch_model)
+    
+pytorch_model = pytorch_model.to(device)
         
 criterion = torch.nn.CrossEntropyLoss()
 test_loss, test_acc = validate(imagenet_data_loader, pytorch_model, device, criterion)
