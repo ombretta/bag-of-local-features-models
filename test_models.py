@@ -97,7 +97,7 @@ def accuracy(output, target, topk=(1,)):
         return res
     
     
-def validate(val_loader, model, criterion, device):
+def validate(val_loader, model, device, criterion):
     batch_time = AverageMeter('Time', ':6.3f')
     losses = AverageMeter('Loss', ':.4e')
     top1 = AverageMeter('Acc@1', ':6.2f')
@@ -130,7 +130,7 @@ def validate(val_loader, model, criterion, device):
             batch_time.update(time.time() - end)
             end = time.time()
 
-            if i % 100 == 0:
+            if i % 8 == 0:
                 progress.display(i)
 
         # TODO: this should also be done with the ProgressMeter
@@ -157,8 +157,10 @@ imagenet_data = torchvision.datasets.ImageFolder(
         ]))
 
 imagenet_data_loader = torch.utils.data.DataLoader(imagenet_data,
-                                          batch_size=1,
-                                          shuffle=False)
+                                          batch_size=8,
+                                          shuffle=False,
+                                          num_workers=2)
+
 ## BAGNET TESTING ON IMAGENET ##
 # available are bagnet9, bagnet17 and bagnet33
 
